@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test package functionality."""
+"""Test all base class functionality."""
 
 
 def test_placeholder():
