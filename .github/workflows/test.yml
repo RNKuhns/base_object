@@ -42,17 +42,13 @@ jobs:
         channel-priority: true
         python-version: ${{ matrix.python-version }}
         auto-activate-base: false
+        use-only-tar-bz2: true
     - name: Check Conda Setup
       shell: bash -l {0}
       run: |
         conda --version
         conda info --envs
         which python
-
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
 
     - name: Generate Pytest coverage report
       run: |
