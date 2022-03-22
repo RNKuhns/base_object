@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   miniconda:
-    name: Miniconda ${{ matrix.os }}
+    name: Miniconda ${{ matrix.os }}-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
         fail-fast: true
@@ -53,10 +53,6 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-
-    - name: Activate environment
-      run: |
-        conda activate test_env
 
     - name: Generate Pytest coverage report
       run: pytest --cov=./ --cov-report=xml
