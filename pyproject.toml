@@ -38,6 +38,7 @@ dev = [
     "pre-commit",
     "pytest",
     "pytest-cov",
+    "coverage",
 ]
 
 binder = ["jupyter"]
@@ -49,7 +50,7 @@ docs = [
     "sphinx_issues",
     "sphinx-gallery",
     "sphinx-panels",
-    "sphinx"
+    "sphinx",
 ]
 
 [project.urls]
