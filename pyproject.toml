@@ -75,11 +75,11 @@ extend-exclude = ["^/setup.py", "docs/conf.py"]
 convention = "numpy"
 
 [tool.coverage.report]
-show_missing = True
+show_missing = true
 
 [tool.coverage.run]
-source = base_object
-include = */base_object/*
+source = "base_object"
+include = "*/base_object/*"
 omit = [
     "*/setup.py"
 ]
