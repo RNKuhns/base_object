@@ -51,8 +51,10 @@ jobs:
         which python
 
     - name: Generate Pytest coverage report
+      shell: bash -l {0}
       run: |
-        conda list
+        conda activate test_env
+        conda info --envs
         pytest --cov=./ --cov-report=xml
 
     - name: Upload coverage to Codecov
