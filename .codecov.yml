@@ -1,0 +1,17 @@
+# PR status check
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+# post coverage report as comment on PR
+comment: false
+
+# enable codecov to report to GitHub status checks
+github_checks:
+  annotations: true

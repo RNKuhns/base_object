@@ -1,0 +1,67 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - 'release**'
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    branches:
+      - main
+      - 'release**'
+    paths-ignore:
+      - 'docs/**'
+  status:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  miniconda:
+    name: Miniconda ${{ matrix.os }}-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        fail-fast: true
+        matrix:
+          os: [ubuntu-latest, windows-latest, macos-latest]
+          python-version: ['3.7', '3.8', '3.9']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: conda-incubator/setup-miniconda@v2
+      name: Set up conda
+      with:
+        activate-environment: test_env
+        environment-file: build_tools/test_env.yml
+        miniconda-version: "latest"
+        auto-update-conda: true
+        channels: conda-forge,defaults
+        channel-priority: true
+        python-version: ${{ matrix.python-version }}
+        auto-activate-base: false
+        use-only-tar-bz2: true
+    - name: Check Conda Setup
+      shell: bash -l {0}
+      run: |
+        conda --version
+        conda info --envs
+        which python
+
+    - name: Generate Pytest coverage report
+      shell: bash -l {0}
+      run: |
+        conda activate test_env
+        pytest --cov=./ --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        env_vars: OS,PYTHON
+        fail_ci_if_error: true
+        files: ./coverage.xml
+        flags: unittests
+        verbose: true
