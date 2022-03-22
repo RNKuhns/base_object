@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools", "wheel", "toml", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "base_object"
+version = "0.1.0"
+description = "General purpose base classes with scikit-learn like design patterns"
+license = "BSD-3-Clause"
+authors = [{name = "Ryan Kuhns"}]
+maintainers = [{name = "Ryan Kuhns"}]
+readme = "README.md"
+keywords = [
+    "base-classes",
+    "class-design",
+    "data-science"
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+requires-python = ">=3.7,<3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+]
+
+binder = ["jupyter"]
+
+docs = [
+    "jupyter",
+    "nbsphinx>=0.8.6",
+    "numpydoc",
+    "sphinx_issues",
+    "sphinx-gallery",
+    "sphinx-panels",
+    "sphinx"
+]
+
+[project.urls]
+repository = "https://github.com/RNKuhns/base_object"
+
+[tool.pytest.ini_options]
+# ignore certain folders
+addopts = [
+    "--ignore build_tools, examples, docs",
+    "--doctest-modules"
+]
+
+[tool.isort]
+profile = "black"
+src_paths = ["isort", "test"]
+multi_line_output = 3
+
+[tool.black]
+line-length = 88
+extend-exclude = ["^/setup.py", "docs/conf.py"]
+
+[tool.pydocstyle]
+convention = "numpy"
+
+[tool.coverage.report]
+show_missing = True
+
+[tool.coverage.run]
+source = base_object
+include = */base_object/*
+omit = [
+    "*/setup.py"
+]
