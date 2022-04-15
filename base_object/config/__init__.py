@@ -28,20 +28,16 @@ _CONFIG_REGISTRY = {
 }
 _GLOBAL_CONFIG = {
     config_name: os.environ.get(config_info["env_name"], config_info["default"])
-    for config_name, config_info in _CONFIG_REGISTRY.items()
+    for config_name, config_info in _CONFIG_REGISTRY.copy().items()
 }
 _THREAD_LOCAL_DATA = threading.local()
 
 
 class ConfigManager(types.ModuleType):
-    """Configure the base_object package."""
+    """Configure the package."""
 
-    _default_config = _GLOBAL_CONFIG
+    _default_config = _GLOBAL_CONFIG.copy()
     _threadlocal = _THREAD_LOCAL_DATA
-    _environment_default_var = [
-        "BASE_OBJECT_PRINT_CHANGED_ONLY",
-        "BASE_OBJECT_DISPLAY",
-    ]
 
     @classmethod
     def _get_threadlocal_config(cls):
@@ -60,20 +56,86 @@ class ConfigManager(types.ModuleType):
         return threadlocal_global_config
 
     @classmethod
+    def get_config_os_env_names(cls):
+        """Retrieve the os environment names for configurable settings.
+
+        Returns
+        -------
+        env_names : list
+            The os environment names that can be used to set configurable settings.
+
+        See Also
+        --------
+        config_context :
+            Configuration context manager.
+        get_config :
+            Retrieve current global configuration values.
+        get_default_config :
+            Return default global configuration values.
+        set_config :
+            Set global configuration.
+        set_default_config :
+            Reset configuration to default.
+
+        Examples
+        --------
+        >>> from base_object.config import get_config_os_env_names
+        >>> get_config_os_env_names()
+        ['BASE_OBJECT_PRINT_CHANGED_ONLY', 'BASE_OBJECT_DISPLAY']
+        """
+        return [config_info["env_name"] for config_info in _CONFIG_REGISTRY.values()]
+
+    @classmethod
+    def get_default_config(cls):
+        """Retrive the default global configuration.
+
+        Returns
+        -------
+        config : dict
+            The default configurable settings (keys) and their default values (values).
+
+        See Also
+        --------
+        config_context :
+            Configuration context manager.
+        get_config :
+            Retrieve current global configuration values.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        set_config :
+            Set global configuration.
+        set_default_config :
+            Reset configuration to default.
+
+        Examples
+        --------
+        >>> from base_object.config import get_default_config
+        >>> get_default_config()
+        {'print_changed_only': True, 'display': 'text'}
+        """
+        return _GLOBAL_CONFIG.copy()
+
+    @classmethod
     def get_config(cls):
         """Retrieve current values for configuration set by :meth:`set_config`.
 
         Returns
         -------
         config : dict
-            Keys are parameter names that can be passed to :meth:`set_config`.
+            The configurable settings (keys) and their default values (values).
 
         See Also
         --------
         config_context :
-            Context manager for global configuration.
+            Configuration context manager.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        get_default_config :
+            Return default global configuration values.
         set_config :
             Set global configuration.
+        set_default_config :
+            Reset configuration to default.
 
         Examples
         --------
@@ -91,28 +153,44 @@ class ConfigManager(types.ModuleType):
         ----------
         print_changed_only : bool, default=None
             If True, only the parameters that were set to non-default
-            values will be printed when printing an estimator. For example,
-            ``print(SVC())`` while True will only print 'SVC()' while the default
-            behaviour would be to print 'SVC(C=1.0, cache_size=200, ...)' with
-            all the non-changed parameters.
+            values will be printed when printing a BaseObject instance. For example,
+            ``print(SVC())`` while True will only print 'SVC()', but would print
+            'SVC(C=1.0, cache_size=200, ...)' with all the non-changed parameters
+            when False. If None, the existing value won't change.
         display : {'text', 'diagram'}, default=None
-            If 'diagram', estimators will be displayed as a diagram in a Jupyter
-            lab or notebook context. If 'text', estimators will be displayed as
-            text. Default is 'text'.
+            If 'diagram', instances inheritting from BaseOBject will be displayed
+            as a diagram in a Jupyter lab or notebook context. If 'text', instances
+            inheritting from BaseObject will be displayed as text. If None, the
+            existing value won't change.
         local_threadsafe : bool, default=False
             If False, set the backend as default for all threads.
+
+        Returns
+        -------
+        None : None
+            No output returned.
 
         See Also
         --------
         config_context :
-            Context manager for global scikit-learn configuration.
+            Configuration context manager.
         get_config :
-            Retrieve current values of the global configuration.
+            Retrieve current global configuration values.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        get_default_config :
+            Return default global configuration values.
+        set_default_config :
+            Reset configuration to default.
 
         Examples
         --------
-        >>> from base_object.config import set_config
+        >>> from base_object.config import get_config, set_config
+        >>> get_config()
+        {'print_changed_only': True, 'display': 'text'}
         >>> set_config(display='diagram')
+        >>> get_config()
+        {'print_changed_only': True, 'display': 'diagram'}
         """
         local_config = cls._get_threadlocal_config()
 
@@ -125,6 +203,44 @@ class ConfigManager(types.ModuleType):
             cls._default_config = local_config
 
     @classmethod
+    def set_default_config(cls):
+        """Reset the configuration to the default.
+
+        Returns
+        -------
+        None : None
+            No output returned.
+
+        See Also
+        --------
+        config_context :
+            Configuration context manager.
+        get_config :
+            Retrieve current global configuration values.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        get_default_config :
+            Return default global configuration values.
+        set_config :
+            Set global scikit-learn configuration.
+
+        Examples
+        --------
+        >>> from base_object.config import get_config, get_default_config, \
+            set_config, set_default_config
+        >>> get_default_config()
+        {'print_changed_only': True, 'display': 'text'}
+        >>> set_config(display='diagram')
+        >>> get_config()
+        {'print_changed_only': True, 'display': 'diagram'}
+        >>> set_default_config()
+        >>> get_config()
+        {'print_changed_only': True, 'display': 'text'}
+        """
+        default_config = cls.get_default_config()
+        cls.set_config(**default_config)
+
+    @classmethod
     @contextmanager
     def config_context(
         cls, print_changed_only=None, display=None, local_threadsafe=False
@@ -135,16 +251,15 @@ class ConfigManager(types.ModuleType):
         ----------
         print_changed_only : bool, default=None
             If True, only the parameters that were set to non-default
-            values will be printed when printing an estimator. For example,
+            values will be printed when printing a BaseObject instance. For example,
             ``print(SVC())`` while True will only print 'SVC()', but would print
             'SVC(C=1.0, cache_size=200, ...)' with all the non-changed parameters
             when False. If None, the existing value won't change.
-            The default value is None.
         display : {'text', 'diagram'}, default=None
-            If 'diagram', estimators will be displayed as a diagram in a Jupyter
-            lab or notebook context. If 'text', estimators will be displayed as
-            text. If None, the existing value won't change.
-            The default value is None.
+            If 'diagram', instances inheritting from BaseOBject will be displayed
+            as a diagram in a Jupyter lab or notebook context. If 'text', instances
+            inheritting from BaseObject will be displayed as text. If None, the
+            existing value won't change.
         local_threadsafe : bool, default=False
             If False, set the backend as default for all threads.
 
@@ -155,9 +270,15 @@ class ConfigManager(types.ModuleType):
         See Also
         --------
         set_config :
-            et global scikit-learn configuration.
+            Set global scikit-learn configuration.
         get_config :
             Retrieve current values of the global configuration.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        get_default_config :
+            Return default global configuration values.
+        set_default_config :
+            Reset configuration to default.
 
         Notes
         -----
@@ -186,9 +307,33 @@ class ConfigManager(types.ModuleType):
     def initialize_config(cls):
         """Initialize the package configuration.
 
-        1) retrieve the default backend name from the `TENSORLY_BACKEND` environment
-            variable if not found, use _DEFAULT_BACKEND
-        2) sets the backend to the retrieved backend name
+        The package configuration is initialized according to the following
+        hierarchy:
+
+        - Any configurations set in the os environment variables are retrieved
+        - Configurable settings not set in os environment have their default values
+          retrieved
+        - Set config is used to initialize the configuration.
+
+        Returns
+        -------
+        None : None
+            No output returned.
+
+        See Also
+        --------
+        config_context :
+            Configuration context manager.
+        get_config :
+            Retrieve current values of the global configuration.
+        get_config_os_env_names :
+            Retrieve os environment names that can be used to set configuration.
+        get_default_config :
+            Return default global configuration values.
+        set_config :
+            Set global scikit-learn configuration.
+        set_default_config :
+            Reset configuration to default.
         """
         config_settings = {}
         for config_name in _CONFIG_REGISTRY:
@@ -196,11 +341,16 @@ class ConfigManager(types.ModuleType):
                 _CONFIG_REGISTRY[config_name]["env_name"],
                 cls._default_config[config_name],
             )
+            if config_setting == "True":
+                config_setting = True
+            if config_setting == "False":
+                config_setting = False
             if config_setting not in _CONFIG_REGISTRY[config_name]["values"]:
                 msg = f"{_CONFIG_REGISTRY[config_name]['env_name']} should be one of "
                 msg += (
                     f"{', '.join(map(repr, _CONFIG_REGISTRY[config_name]['values']))}."
                 )
+                msg += "Using default value for this configuration as a result."
                 warnings.warn(msg, UserWarning)
                 config_setting = cls._default_config[config_name]
             config_settings[config_name] = config_setting
@@ -210,7 +360,15 @@ class ConfigManager(types.ModuleType):
 
     def __dir__(cls):
         """Indiate items in the scope."""
-        return ["config_context", "get_config", "set_config", "ConfigManager"]
+        return [
+            "config_context",
+            "get_config",
+            "get_config_os_env_names",
+            "get_default_config",
+            "set_config",
+            "set_default_config",
+            "ConfigManager",
+        ]
 
 
 # Initialise the backend to the default one
