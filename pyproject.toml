@@ -74,6 +74,7 @@ tests = [
     "coverage",
     "pytest-cov",
     "numpy",
+    "safety",
 ]
 
 [project.urls]
