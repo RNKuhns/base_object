@@ -11,12 +11,12 @@ import threading
 import types
 import warnings
 from contextlib import contextmanager
-from typing import Any, Dict, Iterator, List, Optional, Tuple, TypedDict
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 try:
-    from typing import Literal
+    from typing import Literal, TypedDict
 except ImportError:
-    from typing_extensions import Literal  # type: ignore
+    from typing_extensions import Literal, TypedDict  # type: ignore
 
 __author__: List[str] = ["RNKuhns"]
 
