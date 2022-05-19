@@ -112,4 +112,4 @@ omit = ["*/setup.py", "tests/*"]
 max-line-length=88
 
 [tool.bandit]
-skips = ["B1010"]
+exclude_dirs = ["*/tests/*"]
