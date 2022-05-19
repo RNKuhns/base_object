@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # copyright: base_object developers, BSD-3-Clause License (see LICENSE file)
-"""Base functionality for objects with scikit-learn like design patterns."""
+""":mod:`base_object.base` provides base classes with a scikit-learn style design."""
 from typing import List
 
 from base_object.base._base import BaseObject
