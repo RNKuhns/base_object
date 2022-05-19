@@ -11,10 +11,20 @@ import threading
 import types
 import warnings
 from contextlib import contextmanager
+from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, TypedDict
 
-__author__ = ["RNKuhns"]
+__author__: List[str] = ["RNKuhns"]
 
-_CONFIG_REGISTRY = {
+
+class ConfigParamSettingInfo(TypedDict):
+    """Define types of the setting information for a given config parameter."""
+
+    env_name: str
+    values: Tuple[Any, ...]
+    default: Any
+
+
+_CONFIG_REGISTRY: Dict[str, ConfigParamSettingInfo] = {
     "print_changed_only": {
         "env_name": "BASE_OBJECT_PRINT_CHANGED_ONLY",
         "values": (True, False),
@@ -26,10 +36,12 @@ _CONFIG_REGISTRY = {
         "default": "text",
     },
 }
-_GLOBAL_CONFIG = {
+
+_GLOBAL_CONFIG: Dict[str, Any] = {
     config_name: os.environ.get(config_info["env_name"], config_info["default"])
-    for config_name, config_info in _CONFIG_REGISTRY.copy().items()
+    for config_name, config_info in _CONFIG_REGISTRY.items()
 }
+
 _THREAD_LOCAL_DATA = threading.local()
 
 
@@ -40,7 +52,7 @@ class ConfigManager(types.ModuleType):
     _threadlocal = _THREAD_LOCAL_DATA
 
     @classmethod
-    def _get_threadlocal_config(cls):
+    def _get_threadlocal_config(cls) -> Dict[str, Any]:
         """Get a threadlocal **mutable** configuration.
 
         If the configuration does not exist, copy the default global configuration.
@@ -56,7 +68,7 @@ class ConfigManager(types.ModuleType):
         return threadlocal_global_config
 
     @classmethod
-    def get_config_os_env_names(cls):
+    def get_config_os_env_names(cls) -> List[str]:
         """Retrieve the os environment names for configurable settings.
 
         Returns
@@ -86,7 +98,7 @@ class ConfigManager(types.ModuleType):
         return [config_info["env_name"] for config_info in _CONFIG_REGISTRY.values()]
 
     @classmethod
-    def get_default_config(cls):
+    def get_default_config(cls) -> Dict[str, Any]:
         """Retrive the default global configuration.
 
         Returns
@@ -116,7 +128,7 @@ class ConfigManager(types.ModuleType):
         return _GLOBAL_CONFIG.copy()
 
     @classmethod
-    def get_config(cls):
+    def get_config(cls) -> Dict[str, Any]:
         """Retrieve current values for configuration set by :meth:`set_config`.
 
         Returns
@@ -146,7 +158,12 @@ class ConfigManager(types.ModuleType):
         return cls._get_threadlocal_config().copy()
 
     @classmethod
-    def set_config(cls, print_changed_only=None, display=None, local_threadsafe=False):
+    def set_config(
+        cls,
+        print_changed_only: Optional[bool] = None,
+        display: Literal["text", "diagram"] = None,
+        local_threadsafe: bool = False,
+    ) -> None:
         """Set global configuration.
 
         Parameters
@@ -203,7 +220,7 @@ class ConfigManager(types.ModuleType):
             cls._default_config = local_config
 
     @classmethod
-    def set_default_config(cls):
+    def set_default_config(cls) -> None:
         """Reset the configuration to the default.
 
         Returns
@@ -222,7 +239,7 @@ class ConfigManager(types.ModuleType):
         get_default_config :
             Return default global configuration values.
         set_config :
-            Set global scikit-learn configuration.
+            Set global configuration.
 
         Examples
         --------
@@ -243,8 +260,11 @@ class ConfigManager(types.ModuleType):
     @classmethod
     @contextmanager
     def config_context(
-        cls, print_changed_only=None, display=None, local_threadsafe=False
-    ):
+        cls,
+        print_changed_only: Optional[bool] = None,
+        display: Literal["text", "diagram"] = None,
+        local_threadsafe: bool = False,
+    ) -> Iterator[None]:
         """Context manager for global configuration.
 
         Parameters
@@ -270,7 +290,7 @@ class ConfigManager(types.ModuleType):
         See Also
         --------
         set_config :
-            Set global scikit-learn configuration.
+            Set global configuration.
         get_config :
             Retrieve current values of the global configuration.
         get_config_os_env_names :
@@ -304,7 +324,7 @@ class ConfigManager(types.ModuleType):
             cls.set_config(**old_config)
 
     @classmethod
-    def initialize_config(cls):
+    def initialize_config(cls) -> None:
         """Initialize the package configuration.
 
         The package configuration is initialized according to the following
@@ -331,11 +351,12 @@ class ConfigManager(types.ModuleType):
         get_default_config :
             Return default global configuration values.
         set_config :
-            Set global scikit-learn configuration.
+            Set global configuration.
         set_default_config :
             Reset configuration to default.
         """
-        config_settings = {}
+        config_setting: Any
+        config_settings: Dict[str, Any] = {}
         for config_name in _CONFIG_REGISTRY:
             config_setting = os.environ.get(
                 _CONFIG_REGISTRY[config_name]["env_name"],
@@ -358,8 +379,8 @@ class ConfigManager(types.ModuleType):
         cls._default_config = config_settings
         cls.set_config(**config_settings)
 
-    def __dir__(cls):
-        """Indiate items in the scope."""
+    def __dir__(self) -> List[str]:
+        """Indicate items in the scope."""
         return [
             "config_context",
             "get_config",
