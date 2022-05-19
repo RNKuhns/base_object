@@ -107,3 +107,9 @@ show_missing = true
 [tool.coverage.run]
 source = ["base_object"]
 omit = ["*/setup.py", "tests/*"]
+
+[tool.doc8]
+max-line-length=88
+
+[tool.bandit]
+skips = ["B1010"]
