@@ -29,16 +29,31 @@ classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
-requires-python = ">=3.7,<3.10"
+requires-python = ">=3.7,<3.11"
 dependencies = []
 
 [project.optional-dependencies]
 dev = [
     "pre-commit",
+    "mypy",
     "pytest",
     "pytest-cov",
     "coverage",
+    "isort",
+    "flake8",
+    "black",
+    "pydocstyle",
+    "nbqa",
+    "flake8-bugbear",
+    "flake8-builtins",
+    "flake8-quotes",
+    "flake8-comprehensions",
+    "pandas-vet",
+    "flake8-print",
+    "pep8-naming",
+    "doc8",
 ]
 
 binder = ["jupyter"]
@@ -47,6 +62,7 @@ docs = [
     "jupyter",
     "nbsphinx>=0.8.6",
     "numpydoc",
+    "pydata-sphinx-theme",
     "sphinx_issues",
     "sphinx-gallery",
     "sphinx-panels",
@@ -55,6 +71,10 @@ docs = [
 
 [project.urls]
 repository = "https://github.com/RNKuhns/base_object"
+
+[tool.setuptools.dynamic]
+version = {attr = "base_object.__version__"}
+readme = {file = ["README.md"]}
 
 [tool.pytest.ini_options]
 # ignore certain folders
