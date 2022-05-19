@@ -69,6 +69,13 @@ docs = [
     "sphinx",
 ]
 
+tests = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "numpy",
+]
+
 [project.urls]
 repository = "https://github.com/RNKuhns/base_object"
 
