@@ -50,7 +50,7 @@ jobs:
         which python
 
     - name: Run Safety security check
-
+      shell: bash -l {0}
       # This will scan the installed python environment for all installed dependencies
       # including transitive dependencies
       run: safety check --full-report --ignore -i 44715 -i 44716 -i 44717
