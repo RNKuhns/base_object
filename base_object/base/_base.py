@@ -404,6 +404,50 @@ class BaseObject:
 
         return self
 
+    def _replace_object(self, attr: str, name: str, new_val: Any) -> None:
+        """Replace a BaseObject in parameter with named BaseObject values.
+
+        Parameters
+        ----------
+        attr : str
+            Name of parameter (and attribute) that includes named objects.
+        name : str
+            Name of parameter to set.
+        new_val : Any
+            The new value to set for the BaseObject corresponding to `name`.
+        """
+        new_objects = list(getattr(self, attr))
+        for i, (object_name, _) in enumerate(new_objects):
+            if object_name == name:
+                new_objects[i] = (name, new_val)
+                break
+            setattr(self, attr, new_objects)
+
+    def _replace_object_param(
+        self, attr: str, obj_name: str, obj_param_name: str, new_val: Any
+    ) -> None:
+        """Replace a BaseObject's parameter in parameter with named BaseObject values.
+
+        Parameters
+        ----------
+        attr : str
+            Name of parameter (and attribute) that includes named objects.
+        obj_name : str
+            Name of object in the named object parameter that will have its
+            parameter updated.
+        obj_param_name : str
+            The name of the parameter to have its value set for `obj_name`.
+        new_val : Any
+            The new value to set for the object parameter corresponding
+            to `obj_param_name`.
+        """
+        new_objects = list(getattr(self, attr))
+        for i, (object_name, obj) in enumerate(new_objects):
+            if object_name == obj_name:
+                new_objects[i] = (obj_name, obj.set_params(**{obj_param_name: new_val}))
+                break
+            setattr(self, attr, new_objects)
+
     def set_params(self, **params: Any) -> BaseObject:
         """Set the class instance's parameters.
 
@@ -462,49 +506,22 @@ class BaseObject:
 
         return self
 
-    def _replace_object(self, attr: str, name: str, new_val: Any) -> None:
-        """Replace a BaseObject in parameter with named BaseObject values.
+    def is_composite(self):
+        """Check if the instance is a composite of BaseObjects.
 
-        Parameters
-        ----------
-        attr : str
-            Name of parameter (and attribute) that includes named objects.
-        name : str
-            Name of parameter to set.
-        new_val : Any
-            The new value to set for the BaseObject corresponding to `name`.
+        Composite objects have parameters with values set to instances other BaseObjects
+        or parameter(s) that contain iterables of named BaseObject instances.
+
+        Returns
+        -------
+        composite: bool
+            Whether the instance contains any parameters that are instances of
+            BaseObject  or parameters that are iterables of named BaseObject instances.
         """
-        new_objects = list(getattr(self, attr))
-        for i, (object_name, _) in enumerate(new_objects):
-            if object_name == name:
-                new_objects[i] = (name, new_val)
-                break
-            setattr(self, attr, new_objects)
+        composite_params = self._get_composite_params()
+        composite = True if composite_params else False
 
-    def _replace_object_param(
-        self, attr: str, obj_name: str, obj_param_name: str, new_val: Any
-    ) -> None:
-        """Replace a BaseObject's parameter in parameter with named BaseObject values.
-
-        Parameters
-        ----------
-        attr : str
-            Name of parameter (and attribute) that includes named objects.
-        obj_name : str
-            Name of object in the named object parameter that will have its
-            parameter updated.
-        obj_param_name : str
-            The name of the parameter to have its value set for `obj_name`.
-        new_val : Any
-            The new value to set for the object parameter corresponding
-            to `obj_param_name`.
-        """
-        new_objects = list(getattr(self, attr))
-        for i, (object_name, obj) in enumerate(new_objects):
-            if object_name == obj_name:
-                new_objects[i] = (obj_name, obj.set_params(**{obj_param_name: new_val}))
-                break
-            setattr(self, attr, new_objects)
+        return composite
 
     @classmethod
     def _check_has_class_tags(
