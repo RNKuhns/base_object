@@ -4,3 +4,5 @@ dependencies:
   - pytest
   - coverage
   - pytest-cov
+  - numpy
+  - safety
