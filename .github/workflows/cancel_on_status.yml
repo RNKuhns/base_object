@@ -3,12 +3,16 @@ on:
   status
 
 jobs:
+
   if_error_or_failure:
     runs-on: ubuntu-latest
     if: >-
       github.event.state == 'error' ||
       github.event.state == 'failure'
     steps:
+      - name: Sleep for 30 seconds
+        shell: bash -l {0}
+        run: sleep 60s
       - env:
           DESCRIPTION: ${{ github.event.description }}
         run: |
