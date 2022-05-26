@@ -1,7 +1,21 @@
 name: Status
 on:
-  status
+  push:
+    branches:
+      - main
+      - 'release**'
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    branches:
+      - main
+      - 'release**'
+    paths-ignore:
+      - 'docs/**'
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 jobs:
 
   if_error_or_failure:
