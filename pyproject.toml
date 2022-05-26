@@ -7,8 +7,8 @@ name = "base_object"
 version = "0.1.0"
 description = "General purpose base classes with scikit-learn like design patterns"
 license = "BSD-3-Clause"
-authors = [{name = "Ryan Kuhns"}]
-maintainers = [{name = "Ryan Kuhns"}]
+authors = [{name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"}]
+maintainers = [{name = "Ryan Kuhns", email = "rk.baseobject@gmail.com"}]
 readme = "README.md"
 keywords = [
     "base-classes",
