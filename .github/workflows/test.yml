@@ -19,6 +19,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+  check_for_precommit_error:
+    name: Check pre-commit.ci status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 60 seconds
+        shell: bash -l {0}
+        run: sleep 60s
+      - env:
+          DESCRIPTION: ${{ github.event.description }}
+          STATUS: ${{ github.event.state }}
+        run: |
+          echo The event description is: $DESCRIPTION
+          echo The status is: $STATUS
+          if [[ $STATUS == 'error' || $STATUS == 'failure' ]]; then exit 0; else exit 1;
+
   miniconda:
     name: Miniconda ${{ matrix.os }}-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
