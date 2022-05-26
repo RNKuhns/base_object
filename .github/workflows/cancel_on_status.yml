@@ -1,0 +1,14 @@
+name: Cancel Test
+on: [status]
+jobs:
+  cancel_other:
+    name: 'Cancel Test and CodeQL Workflows'
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.state == 'error' ||
+      github.event.state == 'failure'
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          workflow_id: [22328533, 26777799]
+          access_token: ${{ github.token }}
