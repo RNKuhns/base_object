@@ -30,3 +30,12 @@ class NoTagsDynamicError(ValueError, AttributeError):
     -----
     Follows convention used in scikit-learn when creating custom errors.
     """
+
+
+class InvalidTagError(ValueError):
+    """Exception class raised if an object's tag is invalid.
+
+    Invalid tags are tag names that are not allowed or allowed tags that have
+    values that are not allowed based on the object's tag registry
+    (e.g., tag value is of wrong type or not one of allowable values).
+    """
