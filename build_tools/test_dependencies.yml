@@ -1,0 +1,6 @@
+name: test_dependencies
+
+dependencies:
+  - pytest
+  - coverage
+  - pytest-cov

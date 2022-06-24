@@ -1,0 +1,7 @@
+name: linting_dependencies
+
+dependencies:
+  - flake8
+  - isort
+  - black
+  - pydocstyle
